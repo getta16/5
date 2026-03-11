@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iWASAM Team - บุคลากร</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Kanit', sans-serif; background: #f0f4f8; }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2e7d32 100%);
+            position: relative; overflow: hidden;
+        }
+
+        .back-link {
+            position: absolute; top: 20px; left: 24px;
+            display: inline-flex; align-items: center; gap: 6px;
+            color: rgba(255,255,255,0.85); text-decoration: none;
+            font-size: 0.85rem; font-weight: 500;
+            background: rgba(255,255,255,0.12);
+            padding: 6px 14px; border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.25);
+            transition: background 0.2s, color 0.2s; z-index: 10;
+        }
+        .back-link:hover { background: rgba(255,255,255,0.22); color: #fff; }
+
+        .person-card {
+            background: #fff; border-radius: 20px; overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .person-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(30,58,138,0.18);
+        }
+        .person-card .top-bar { height: 6px; }
+        .role-pi    .top-bar { background: linear-gradient(90deg, #1e3a8a, #2563eb); }
+        .role-phd   .top-bar { background: linear-gradient(90deg, #166534, #22c55e); }
+        .role-ms    .top-bar { background: linear-gradient(90deg, #0e7490, #06b6d4); }
+        .role-bs    .top-bar { background: linear-gradient(90deg, #92400e, #f59e0b); }
+        .role-staff .top-bar { background: linear-gradient(90deg, #6b21a8, #a855f7); }
+
+        .avatar-wrap { display: flex; justify-content: center; padding: 24px 0 12px; }
+        .avatar-placeholder {
+            width: 96px; height: 96px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; font-weight: 700; color: #fff;
+        }
+        .role-pi    .avatar-placeholder { background: linear-gradient(135deg,#1e3a8a,#2563eb); }
+        .role-phd   .avatar-placeholder { background: linear-gradient(135deg,#166534,#22c55e); }
+        .role-ms    .avatar-placeholder { background: linear-gradient(135deg,#0e7490,#06b6d4); }
+        .role-bs    .avatar-placeholder { background: linear-gradient(135deg,#92400e,#f59e0b); }
+        .role-staff .avatar-placeholder { background: linear-gradient(135deg,#6b21a8,#a855f7); }
+
+        .badge {
+            display: inline-block; padding: 2px 12px;
+            border-radius: 999px; font-size: 0.7rem; font-weight: 600;
+        }
+        .role-pi    .badge { background:#dbeafe; color:#1e40af; }
+        .role-phd   .badge { background:#dcfce7; color:#166534; }
+        .role-ms    .badge { background:#cffafe; color:#0e7490; }
+        .role-bs    .badge { background:#fef3c7; color:#92400e; }
+        .role-staff .badge { background:#f3e8ff; color:#6b21a8; }
+
+        .card-body { padding: 0 20px 20px; text-align: center; }
+        .card-name { font-size: 1rem; font-weight: 600; color: #1e293b; margin: 10px 0 4px; line-height: 1.3; }
+        .card-name-en { font-size: 0.78rem; color: #64748b; margin-bottom: 4px; }
+        .card-research { font-size: 0.75rem; color: #475569; margin: 6px 0 4px; line-height: 1.5; }
+
+        /* ── Email button ── */
+        .email-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #475569;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            word-break: break-all;
+        }
+        .email-btn:hover { background: #1e3a8a; color: #fff; border-color: #1e3a8a; }
+        .email-btn .icon { font-size: 0.75rem; flex-shrink: 0; }
+
+        .group-label {
+            font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em;
+            text-transform: uppercase; padding: 4px 14px;
+            border-radius: 999px; margin-bottom: 20px; display: inline-block;
+        }
+        .gl-pi    { background:#dbeafe; color:#1e40af; }
+        .gl-phd   { background:#dcfce7; color:#166534; }
+        .gl-ms    { background:#cffafe; color:#0e7490; }
+        .gl-bs    { background:#fef3c7; color:#92400e; }
+        .gl-staff { background:#f3e8ff; color:#6b21a8; }
+
+        @keyframes fadeUp {
+            from { opacity:0; transform:translateY(30px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+        .fade-in { animation: fadeUp 0.6s ease both; }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+    </style>
+</head>
+<body>
+
+<header class="hero-gradient text-white py-20 px-6 text-center shadow-lg">
+    <a href="index.html" class="back-link">← กลับหน้าหลัก</a>
+    <h1 class="text-5xl font-bold mb-4">iWASAM Team</h1>
+    <p class="text-xl opacity-90">บุคลากรของโครงการ iWASAM</p>
+    <p class="mt-2 text-sm italic">Integrated Water and Smart Agriculture Management</p>
+    <p class="mt-2 text-sm italic">Department of Irrigation Engineering</p>
+    <p class="mt-2 text-sm italic">Faculty of Engineering at Kamphaeng Saen, Kasetsart University</p>
+</header>
+
+<main class="max-w-6xl mx-auto py-14 px-6">
+
+    <!-- STATS BAR -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14 fade-in">
+        <div class="bg-white rounded-2xl p-5 text-center shadow-sm">
+            <div class="text-3xl font-bold text-blue-800">1</div>
+            <div class="text-sm text-gray-500 mt-1">Principal Investigator</div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 text-center shadow-sm">
+            <div class="text-3xl font-bold text-green-700">15</div>
+            <div class="text-sm text-gray-500 mt-1">KU Researchers</div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 text-center shadow-sm">
+            <div class="text-3xl font-bold text-cyan-700">6</div>
+            <div class="text-sm text-gray-500 mt-1">RID Researchers</div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 text-center shadow-sm">
+            <div class="text-3xl font-bold text-amber-700">7</div>
+            <div class="text-sm text-gray-500 mt-1">Research Assistants</div>
+        </div>
+    </div>
+
+    <!-- PI -->
+    <div class="mb-14 fade-in delay-1">
+        <span class="group-label gl-pi">Principal Investigator</span>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div class="person-card role-pi">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ส</div></div>
+                <div class="card-body">
+                    <div class="badge">หัวหน้าโครงการ</div>
+                    <div class="card-name">รศ.ดร.สมชาย ดอนเจดีย์</div>
+                    <div class="card-name-en">Assoc.Prof.Dr. Somchai Donjadee</div>
+                    <div class="card-research">วิศวกรรมชลประทาน · การจัดสรรน้ำอัจฉริยะ iWASAM</div>
+                    <a href="/cdn-cgi/l/email-protection#ff999a91988c9c9bbf948ad19e9cd18b97" class="email-btn"><span class="icon">✉</span><span class="__cf_email__" data-cfemail="e583808b82968681a58e90cb8486cb918d">[email&#160;protected]</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KU Researchers -->
+    <div class="mb-14 fade-in delay-2">
+        <span class="group-label gl-phd">KU Researchers</span>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+
+            <div class="person-card role-phd">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ว</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">รศ.ดร.วราวุธ วุฒิวณิชย์</div>
+                    <div class="card-name-en">Assoc.Prof.Dr. Warawut Wuttiwanit</div>
+                    <div class="card-research">การจัดสรรน้ำอัจฉริยะ · iGATE Digital Twin</div>
+                    <a href="/cdn-cgi/l/email-protection#b8deddd6dfcecfcef8d3cd96d9db96ccd0" class="email-btn"><span class="icon">✉</span><span class="__cf_email__" data-cfemail="95f3f0fbf2e3e2e3d5fee0bbf4f6bbe1fd">[email&#160;protected]</span></a>
+                </div>
+            </div>
+
+            <div class="person-card role-phd">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">น</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">ผศ.นิมิตร เฉิดฉันท์พิพัฒน์</div>
+                    <div class="card-name-en">Asst.Prof. Nimit Choedchanpipat</div>
+                    <div class="card-research">Hydraulic Engineering · Irrigation System Design</div>
+                    <a href="/cdn-cgi/l/email-protection#cdaba8a3aaa3a0ae8da6b8e3acaee3b9a5" class="email-btn"><span class="icon">✉</span><span class="__cf_email__" data-cfemail="9afcfff4fdf4f7f9daf1efb4fbf9b4eef2">[email&#160;protected]</span></a>
+                </div>
+            </div>
+
+            <div class="person-card role-phd">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ศ</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">รศ.ดร.ศศรส ใจจิตร์</div>
+                    <div class="card-name-en">Assoc.Prof.Dr. Sasarose Jaijit</div>
+                    <a href="/cdn-cgi/l/email-protection#2442414a43574b4e45644f510a45470a504c" class="email-btn"><span class="icon">✉</span><span class="__cf_email__" data-cfemail="5432313a33273b3e35143f217a35377a203c">[email&#160;protected]</span></a>
+                </div>
+            </div>
+
+            <div class="person-card role-phd">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ก</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">ผศ.ดร.เกศวรา สิทธิโชค</div>
+                    <div class="card-name-en">Asst.Prof.Dr. Kedsawra Sittichok</div>
+                    <a href="/cdn-cgi/l/email-protection#16707378717d6465567d6338777538627e" class="email-btn"><span class="icon">✉</span><span class="__cf_email__" data-cfemail="4026252e272b3233002b356e21236e3428">[email&#160;protected]</span></a>
+                </div>
+            </div>
+
+            <div class="person-card role-phd">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">จ</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">รศ.ดร.จุฑา พิชิตลำเค็ญ</div>
+                    <div class="card-name-en">Assoc.Prof.Dr. Juta Pichitlamken</div>
+                    <a href="/cdn-cgi/l/email-protection#99f3ecedf8b7e9d9f2ecb7f8fab7edf1" class="email-btn"><span class="icon">✉</span><span class="__cf_email__" data-cfemail="f298878693dc82b29987dc9391dc869a">[email&#160;protected]</span></a>
+                </div>
+            </div>
+
+            <div class="person-card role-phd">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">พ</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">ผศ.ดร.พิเชษฐ์ สืบสายพรหม</div>
+                    <div class="card-name-en">Asst.Prof.Dr. Pichet Suebsayprom</div>
+                    <a href="/cdn-cgi/l/email-protection#3d5b58535a4d5e4e487d5648135c5e134955" class="email-btn"><span class="icon">✉</span><span class="__cf_email__" data-cfemail="1076757e7760736365507b653e71733e6478">[email&#160;protected]</span></a>
+                </div>
+            </div>
+
+            <div class="person-card role-phd">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ว</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">ผศ.ดร.วิเนตร แสนหาญ</div>
+                    <div class="card-name-en">Asst.Prof.Dr. Winet Saenhan</div>
+                    <a href="/cdn-cgi/l/email-protection#d7b1b6b6a4a0b9a497bca2f9b6b4f9a3bf" class="email-btn"><span class="icon">✉</span><span class="__cf_email__" data-cfemail="7a1c1b1b090d14093a110f541b19540e12">[email&#160;protected]</span></a>
+                </div>
+            </div>
+
+            <div class="person-card role-phd">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ส</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">ผศ.ดร.สิรัญญา ทองชาติ</div>
+                    <div class="card-name-en">Asst.Prof.Dr. Siranya Thongchat</div>
+                    <a href="/cdn-cgi/l/email-protection#c9afaca7aebab0bdaa89a2bce7a8aae7bda1" class="email-btn"><span class="icon">✉</span><span class="__cf_email__" data-cfemail="b3d5d6ddd4c0cac7d0f3d8c69dd2d09dc7db">[email&#160;protected]</span></a>
+                </div>
+            </div>
+
+            <div class="person-card role-phd">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ธ</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">ดร.ธนัญกรณ์ ใจผ่อง</div>
+                    <div class="card-name-en">Dr. Thanankorn Jaiphong</div>
+                    <a href="/cdn-cgi/l/email-protection#186a7c716f6c7258736d36797b366c70" class="email-btn"><span class="icon">✉</span><span class="__cf_email__" data-cfemail="8cfee8e5fbf8e6cce7f9a2edefa2f8e4">[email&#160;protected]</span></a>
+                </div>
+            </div>
+
+            <div class="person-card role-phd">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ท</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">นายทิตินัย เทียนแย้ม</div>
+                    <div class="card-name-en">Titinai Thianyaem</div>
+                    <a href="/cdn-cgi/l/email-protection#6d19041904030c0443192d0618430c0e431905" class="email-btn"><span class="icon">✉</span><span class="__cf_email__" data-cfemail="60140914090e01094e14200b154e01034e1408">[email&#160;protected]</span></a>
+                </div>
+            </div>
+
+            <div class="person-card role-phd">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">พ</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">ดร.พัชรียา ไวภารา</div>
+                    <div class="card-name-en">Dr. Phatchareeya Waiphara</div>
+                    <div class="card-research">Remote Sensing · ระบบเกษตรแม่นยำ</div>
+                    <a href="/cdn-cgi/l/email-protection#3d5b58535a4d584a7d5648135c5e134955" class="email-btn"><span class="icon">✉</span><span class="__cf_email__" data-cfemail="bcdad9d2dbccd9cbfcd7c992dddf92c8d4">[email&#160;protected]</span></a>
+                </div>
+            </div>
+
+            <div class="person-card role-phd">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ว</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">นายวีระพงษ์ กระแสธีป</div>
+                    <div class="card-name-en">Weerapong Krasaethip</div>
+                    <div class="card-research">วิศวกรรมโยธา</div>
+                    <a href="/cdn-cgi/l/email-protection#8debe8e3eafae2e6cde6f8a3eceea3f9e5" class="email-btn"><span class="icon">✉</span><span class="__cf_email__" data-cfemail="ec8a89828b9b8387ac8799c28d8fc29884">[email&#160;protected]</span></a>
+                </div>
+            </div>
+
+            <div class="person-card role-phd">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ศ</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">นางสาวศศิธร ชลรัตน์อมฤต</div>
+                    <div class="card-name-en">Sasithorn Cholratonamrit</div>
+                    <a href="/cdn-cgi/l/email-protection#4a2c2f242d39393e290a213f642b29643e22" class="email-btn"><span class="icon">✉</span><span class="__cf_email__" data-cfemail="3c5a59525b4f4f485f7c5749125d5f124854">[email&#160;protected]</span></a>
+                </div>
+            </div>
+
+            <div class="person-card role-phd">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ม</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">นายมาโนช ทองดอนเหมือน</div>
+                    <div class="card-name-en">Manoch Thongdonmuean</div>
+                    <a href="/cdn-cgi/l/email-protection#68050906071c461c28031d46090b461c00" class="email-btn"><span class="icon">✉</span><span class="__cf_email__" data-cfemail="4a272b24253e643e0a213f642b29643e22">[email&#160;protected]</span></a>
+                </div>
+            </div>
+
+            <div class="person-card role-phd">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ภ</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">นางสาวภัคจิรา สุขเกตุ</div>
+                    <div class="card-name-en">Phakjira Sukkeat</div>
+                    <a href="/cdn-cgi/l/email-protection#1771727970677d65577c6239767439637f" class="email-btn"><span class="icon">✉</span><span class="__cf_email__" data-cfemail="3553505b52455f47755e401b54561b415d">[email&#160;protected]</span></a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- RID Researchers -->
+    <div class="mb-14 fade-in delay-3">
+        <span class="group-label gl-ms">RID Researchers</span>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+
+            <div class="person-card role-ms">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ช</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">นายชัยยะ พึ่งโพธิ์สภ</div>
+                    <div class="card-name-en">Chaiya Phuengphotasap</div>
+                </div>
+            </div>
+
+            <div class="person-card role-ms">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ส</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">นายสรายุทธ อิ่มใจ</div>
+                    <div class="card-name-en">Sarayut Imjai</div>
+                </div>
+            </div>
+
+            <div class="person-card role-ms">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ร</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">นายรสุ สืบสหการ</div>
+                    <div class="card-name-en">Rasu Suebsahakarn</div>
+                </div>
+            </div>
+
+            <div class="person-card role-ms">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ล</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">นางสาวลพรรณพลอย ชาวเรือ</div>
+                    <div class="card-name-en">Laphanphloi Chaoruea</div>
+                </div>
+            </div>
+
+            <div class="person-card role-ms">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ป</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">นายปรเมศวร์ จอนแจ้ง</div>
+                    <div class="card-name-en">Poramet Chonjang</div>
+                </div>
+            </div>
+
+            <div class="person-card role-ms">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ป</div></div>
+                <div class="card-body">
+                    <div class="badge">นักวิจัย</div>
+                    <div class="card-name">นายประเสริฐ ล่ำภากร</div>
+                    <div class="card-name-en">Prasert Lamphakorn</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Research Assistants -->
+    <div class="mb-14 fade-in delay-4">
+        <span class="group-label gl-bs">Research Assistants</span>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+
+            <div class="person-card role-bs">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">สุ</div></div>
+                <div class="card-body">
+                    <div class="badge">ผู้ช่วยวิจัย</div>
+                    <div class="card-name">นางสาวสุภาวดี แดงโชติ</div>
+                    <div class="card-name-en">Miss Supawadee Daengchot</div>
+                    <div class="card-research">การประชาสัมพันธ์และการมีส่วนร่วม</div>
+                </div>
+            </div>
+
+            <div class="person-card role-bs">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">อ</div></div>
+                <div class="card-body">
+                    <div class="badge">ผู้ช่วยวิจัย</div>
+                    <div class="card-name">นางสาวอารียา จันทา</div>
+                    <div class="card-name-en">Miss Arriya Chantha</div>
+                    <div class="card-research">ระบบภูมิสารสนเทศ · วิศวกรรมชลประทานและการจัดการน้ำ</div>
+                </div>
+            </div>
+
+            <div class="person-card role-bs">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ถ</div></div>
+                <div class="card-body">
+                    <div class="badge">ผู้ช่วยวิจัย</div>
+                    <div class="card-name">นายถิรพุทธิ์ ดอนขันไพร</div>
+                    <div class="card-name-en">Mr. Thiraput Donkhanpai</div>
+                    <div class="card-research">ระบบภูมิสารสนเทศ · Web-GIS Developer</div>
+                </div>
+            </div>
+
+            <div class="person-card role-bs">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">อั</div></div>
+                <div class="card-body">
+                    <div class="badge">ผู้ช่วยวิจัย</div>
+                    <div class="card-name">นางสาวอังคนา บ้านกลางดิลก</div>
+                    <div class="card-name-en">Miss Angkhana Banklangdilok</div>
+                    <div class="card-research">วิศวกรรมชลประทานและการจัดการน้ำ</div>
+                </div>
+            </div>
+
+            <div class="person-card role-bs">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ส</div></div>
+                <div class="card-body">
+                    <div class="badge">ผู้ช่วยวิจัย</div>
+                    <div class="card-name">นางสาวสมฤทัย เมืองนิล</div>
+                    <div class="card-name-en">Miss Somrouthai Mueangnin</div>
+                    <div class="card-research">ทรัพยากรบุคคล · งานธุรการ</div>
+                </div>
+            </div>
+
+            <div class="person-card role-bs">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ฉ</div></div>
+                <div class="card-body">
+                    <div class="badge">ผู้ช่วยวิจัย</div>
+                    <div class="card-name">นายฉัตรชัย ปิดตานัง</div>
+                    <div class="card-name-en">Mr. Chatchai Pidtanung</div>
+                    <div class="card-research">วิศวกรรมเกษตร</div>
+                </div>
+            </div>
+
+            <div class="person-card role-bs">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ณั</div></div>
+                <div class="card-body">
+                    <div class="badge">ผู้ช่วยวิจัย</div>
+                    <div class="card-name">นางสาวณัฐธยาน์ จำปาเมือง</div>
+                    <div class="card-name-en">Miss Nattaya Jumpameueng</div>
+                    <div class="card-research">เกษตรศาสตร์การจัดการดูแลโรคพืชและศัตรูพืช</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Project Advisors -->
+    <div class="mb-6 fade-in delay-5">
+        <span class="group-label gl-staff">Project Advisors · ที่ปรึกษาโครงการ</span>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+
+            <div class="person-card role-staff">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ณ</div></div>
+                <div class="card-body">
+                    <div class="badge">ที่ปรึกษาโครงการ</div>
+                    <div class="card-name">นายณัฐพล วุฒิจันทร์</div>
+                    <div class="card-name-en">Mr. Nattaphon Wuttichan</div>
+                </div>
+            </div>
+
+            <div class="person-card role-staff">
+                <div class="top-bar"></div>
+                <div class="avatar-wrap"><div class="avatar-placeholder">ล</div></div>
+                <div class="card-body">
+                    <div class="badge">ที่ปรึกษาโครงการ</div>
+                    <div class="card-name">นายเลอบุญ อุดมทรัพย์</div>
+                    <div class="card-name-en">Mr. Loeboon Udomsap</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JOIN US -->
+    <div class="mt-10 bg-gradient-to-r from-blue-900 to-green-800 text-white rounded-2xl p-10 text-center fade-in">
+        <div class="text-3xl mb-3">🤝</div>
+        <h2 class="text-xl font-bold mb-2">สนใจร่วมทีม iWASAM?</h2>
+        <p class="text-sm opacity-80 mb-5">เปิดรับนักศึกษาปริญญาโท–เอก และนักวิจัยที่สนใจด้านชลประทานอัจฉริยะ เกษตรแม่นยำ และ IoT</p>
+        <a href="mailto:fengscd@ku.ac.th" class="inline-block bg-white text-blue-900 font-semibold px-7 py-3 rounded-full text-sm hover:bg-blue-50 transition">
+            ติดต่อเรา
+        </a>
+    </div>
+
+</main>
+
+<footer class="bg-gray-800 text-gray-400 py-10 text-center">
+    <p>© 2024-2026 IWASAM Ecosystem - Faculty of Engineering, Kamphaeng Saen</p>
+    <p class="text-sm mt-2">Kasetsart University</p>
+</footer>
+</body>
+</html>
